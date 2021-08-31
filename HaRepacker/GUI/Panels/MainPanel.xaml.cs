@@ -512,22 +512,22 @@ namespace HaRepacker.GUI.Panels
         /// <param name="target"></param>
         public void AddWzLuaPropertyToSelectedIndex(System.Windows.Forms.TreeNode target)
         {
- /*           string name;
-            string value;
-            if (!(target.Tag is WzDirectory) && !(target.Tag is WzFile))
-            {
-                Warning.Error(Properties.Resources.MainCannotInsertToNode);
-                return;
-            }
-            else if (!NameValueInputBox.Show(Properties.Resources.MainAddString, out name, out value))
-                return;
+            /*           string name;
+                       string value;
+                       if (!(target.Tag is WzDirectory) && !(target.Tag is WzFile))
+                       {
+                           Warning.Error(Properties.Resources.MainCannotInsertToNode);
+                           return;
+                       }
+                       else if (!NameValueInputBox.Show(Properties.Resources.MainAddString, out name, out value))
+                           return;
 
-            string propertyName = name;
-            if (!propertyName.EndsWith(".lua"))
-            {
-                propertyName += ".lua"; // it must end with .lua regardless
-            }
-            ((WzNode)target).AddObject(new WzImage(propertyName), UndoRedoMan);*/
+                       string propertyName = name;
+                       if (!propertyName.EndsWith(".lua"))
+                       {
+                           propertyName += ".lua"; // it must end with .lua regardless
+                       }
+                       ((WzNode)target).AddObject(new WzImage(propertyName), UndoRedoMan);*/
         }
 
         /// <summary>
@@ -725,7 +725,8 @@ namespace HaRepacker.GUI.Panels
                 if (!stringProperty.IsSpineAtlasResources)
                 {
                     stringProperty.Value = setText;
-                } else
+                }
+                else
                 {
                     throw new NotSupportedException("Usage of textBoxProp for spine WzStringProperty.");
                 }
@@ -806,19 +807,19 @@ namespace HaRepacker.GUI.Panels
                 string setText = textEditor.textEditor.Text;
                 byte[] encBytes = luaProp.EncodeDecode(Encoding.ASCII.GetBytes(setText));
                 luaProp.Value = encBytes;
-            } 
+            }
             else if (obj is WzStringProperty stringProp)
             {
                 //if (stringProp.IsSpineAtlasResources)
-               // {
-                    string setText = textEditor.textEditor.Text;
+                // {
+                string setText = textEditor.textEditor.Text;
 
-                    stringProp.Value = setText;
-              /*  } 
-                else
-                {
-                    throw new NotSupportedException("Usage of TextEditor for non-spine WzStringProperty.");
-                }*/
+                stringProp.Value = setText;
+                /*  } 
+                  else
+                  {
+                      throw new NotSupportedException("Usage of TextEditor for non-spine WzStringProperty.");
+                  }*/
             }
         }
 
@@ -911,7 +912,7 @@ namespace HaRepacker.GUI.Panels
         }
 
 
-       // private bool threadDone = false;
+        // private bool threadDone = false;
 
         /// <summary>
         /// Changes the displayed image in 'canvasPropBox' with a user defined input.
@@ -962,40 +963,41 @@ namespace HaRepacker.GUI.Panels
             }
         }
 
+        public System.Windows.Forms.OpenFileDialog dialog;
+
         private void UploadCustomImages(WzCanvasProperty custom, WzNode parent)
         {
-            DirectoryInfo di = new DirectoryInfo(@"D:\`repacker input");
-                foreach (string path in Directory.GetFiles(di.Name))
+            foreach (string path in dialog.FileNames)
+            {
+                string name = Path.GetFileNameWithoutExtension(path);
+                System.Drawing.Bitmap bmp;
+                try
                 {
-                    string name = Path.GetFileNameWithoutExtension(path);
-                    System.Drawing.Bitmap bmp;
-                    try
+                    bmp = (System.Drawing.Bitmap)System.Drawing.Image.FromFile(path);
+                    if (bmp != null)
                     {
-                        bmp = (System.Drawing.Bitmap)System.Drawing.Image.FromFile(path);
-                        if (bmp != null)
+                        string imgNodeName = custom.Name.ToString();
+                        string imgParentNodeName = custom.Parent.Name.ToString();
+                        WzObject bigParent = custom.Parent.Parent;
+                        string bigParentsName = bigParent.Name.ToString();
+                        if (name.StartsWith(bigParentsName) && name.Contains("." + imgParentNodeName + ".") && name.EndsWith(imgNodeName) || name.Equals("info." + imgNodeName))
                         {
-                                string imgNodeName = custom.Name.ToString();
-                                string imgParentNodeName = custom.Parent.Name.ToString();
-                                WzObject bigParent = custom.Parent.Parent;
-                                string bigParentsName = bigParent.Name.ToString();
-                                if (name.StartsWith(bigParentsName) && name.Contains("." + imgParentNodeName + ".") && name.EndsWith(imgNodeName) || name.Equals("info." + imgNodeName))
-                                {
-                                    custom.PngProperty.SetImage(bmp);
-                                    custom.ParentImage.Changed = true;
-                                    canvasPropBox.Image = bmp.ToWpfBitmap();
-                                }
-                            }
-                            else
-                             {
-                                return;
-                             }
-                     } catch
-                     {
-                         return;
-                     }
+                            custom.PngProperty.SetImage(bmp);
+                            custom.ParentImage.Changed = true;
+                            canvasPropBox.Image = bmp.ToWpfBitmap();
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                catch
+                {
+                    return;
                 }
             }
-
+    }
         public void CheckCustomImageRecursively(WzNode node)
         {
             if (node.Tag is WzCanvasProperty custom)
@@ -1010,9 +1012,20 @@ namespace HaRepacker.GUI.Panels
 
         public void UploadCustomImages_Click()
         {
-            foreach (WzNode node in DataTree.SelectedNodes)
+
+            dialog = new System.Windows.Forms.OpenFileDialog()
             {
-                CheckCustomImageRecursively(node); 
+                Title = "Select the images you'd like to use",
+                Filter = "Supported Image Formats (*.png;*.bmp;*.jpg;*.gif;*.jpeg;*.tif;*.tiff)|*.png;*.bmp;*.jpg;*.gif;*.jpeg;*.tif;*.tiff",
+                Multiselect = true
+            };
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                foreach (WzNode node in DataTree.SelectedNodes)
+                {
+                    CheckCustomImageRecursively(node);
+                }
             }
             MessageBox.Show("Successfully added your custom item!");
         }
