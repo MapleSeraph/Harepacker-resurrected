@@ -323,12 +323,12 @@
                 </Grid>
             </Grid>
 
-            <GridSplitter Background="DarkGray"  ResizeDirection="Columns" Grid.Column="1" 
+            <GridSplitter Background="#FFF1EDED"  ResizeDirection="Columns" Grid.Column="1" 
                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                   ResizeBehavior="PreviousAndNext" />
 
 
-            <Grid x:Name="grid" Grid.Column="2" Background="#FFF1F1F1">
+            <Grid x:Name="grid" Grid.Column="2" Background="#FFF1EDED">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"/>
                     <RowDefinition Height="Auto"/>

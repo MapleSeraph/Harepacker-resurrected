@@ -110,6 +110,7 @@ namespace HaRepacker.GUI
             // 
             // mainMenu
             // 
+            this.mainMenu.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.mainMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
