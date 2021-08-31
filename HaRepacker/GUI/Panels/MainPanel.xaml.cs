@@ -1,44 +1,35 @@
-﻿using HaRepacker.Comparer;
-using HaRepacker.Converter;
-using HaRepacker.GUI.Input;
-using HaSharedLibrary.Render.DX;
+﻿using HaRepacker.GUI.Input;
 using HaSharedLibrary.GUI;
-using HaSharedLibrary.Util;
 using MapleLib.WzLib;
 using MapleLib.WzLib.Spine;
 using MapleLib.WzLib.WzProperties;
 using MapleLib.Converters;
-using Microsoft.Xna.Framework;
-using Spine;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using static MapleLib.Configuration.UserSettings;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using System.IO;
+using System.Windows.Forms;
+using DataFormats = System.Windows.Forms.DataFormats;
+using DragEventArgs = System.Windows.DragEventArgs;
+using MessageBox = System.Windows.MessageBox;
+using System.Windows.Forms;
+using System.Linq;
+using Button = System.Windows.Controls.Button;
 
 namespace HaRepacker.GUI.Panels
 {
     /// <summary>
     /// Interaction logic for MainPanelXAML.xaml
     /// </summary>
-    public partial class MainPanel : UserControl
+    public partial class MainPanel : System.Windows.Controls.UserControl
     {
         // Constants
         private const string FIELD_LIMIT_OBJ_NAME = "fieldLimit";
@@ -919,6 +910,9 @@ namespace HaRepacker.GUI.Panels
             }
         }
 
+
+       // private bool threadDone = false;
+
         /// <summary>
         /// Changes the displayed image in 'canvasPropBox' with a user defined input.
         /// </summary>
@@ -966,6 +960,64 @@ namespace HaRepacker.GUI.Panels
                 // Add undo actions
                 //UndoRedoMan.AddUndoBatch(actions);
             }
+        }
+
+        private void UploadCustomImages(WzCanvasProperty custom, WzNode parent)
+        {
+            DirectoryInfo di = new DirectoryInfo(@"D:\`repacker input");
+            if (di.Exists)
+            {
+                foreach (string path in Directory.GetFiles(di.Name))
+                {
+                    string name = Path.GetFileNameWithoutExtension(path);
+                    System.Drawing.Bitmap bmp;
+                    try
+                    {
+                        bmp = (System.Drawing.Bitmap)System.Drawing.Image.FromFile(path);
+                        if (bmp != null)
+                        {
+                                string imgNodeName = custom.Name.ToString();
+                                string imgParentNodeName = custom.Parent.Name.ToString();
+                                WzObject bigParent = custom.Parent.Parent;
+                                string bigParentsName = bigParent.Name.ToString();
+                                if (name.StartsWith(bigParentsName) && name.Contains("." + imgParentNodeName + ".") && name.EndsWith(imgNodeName) || name.Equals("info." + imgNodeName))
+                                {
+                                    custom.PngProperty.SetImage(bmp);
+                                    custom.ParentImage.Changed = true;
+                                    canvasPropBox.Image = bmp.ToWpfBitmap();
+                                }
+                            }
+                            else
+                             {
+                                return;
+                             }
+                     } catch
+                     {
+                         return;
+                     }
+                }
+            }
+        }
+
+        public void CheckCustomImageRecursively(WzNode node)
+        {
+            if (node.Tag is WzCanvasProperty custom)
+            {
+                UploadCustomImages(custom, node);
+            }
+            foreach (WzNode child in node.Nodes) {
+              
+                    CheckCustomImageRecursively(child);
+            }
+        }
+
+        public void UploadCustomImages_Click()
+        {
+            foreach (WzNode node in DataTree.SelectedNodes)
+            {
+                CheckCustomImageRecursively(node); 
+            }
+            MessageBox.Show("Successfully added your custom item!");
         }
 
         private void FixLinkForOldMS(WzCanvasProperty selectedWzCanvas, WzNode parentCanvasNode)
@@ -1027,7 +1079,7 @@ namespace HaRepacker.GUI.Panels
                 CheckImageNodeRecursively(node);
             }
             double ms = (DateTime.Now - t0).TotalMilliseconds;
-            MessageBox.Show("Done.\r\nElapsed time: " + ms + " ms (avg: " + (ms / nodeCount) + ")");
+            MessageBox.Show("Successfully parsed!\r\n\r\nElapsed time: " + ms + " ms (avg: " + (ms / nodeCount) + ")");
         }
 
         /// <summary>
@@ -1943,11 +1995,11 @@ namespace HaRepacker.GUI.Panels
                 else SearchTV(node);
                 if (finished) break;
             }
-            if (!finished) { MessageBox.Show(Properties.Resources.MainTreeEnd); searchidx = 0; DataTree.SelectedNode.EnsureVisible(); }
+            if (!finished) { System.Windows.MessageBox.Show(Properties.Resources.MainTreeEnd); searchidx = 0; DataTree.SelectedNode.EnsureVisible(); }
             findBox.Focus();
         }
 
-        private void findBox_KeyDown(object sender, KeyEventArgs e)
+        private void findBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
@@ -1961,6 +2013,5 @@ namespace HaRepacker.GUI.Panels
             searchidx = 0;
         }
         #endregion
-
     }
 }

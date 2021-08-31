@@ -58,6 +58,7 @@ namespace HaRepacker
         private ToolStripMenuItem AddVector;
         private ToolStripMenuItem Rename;
         private ToolStripMenuItem FixLink;
+        private ToolStripMenuItem CustomItem;
 
         /*private ToolStripMenuItem ExportPropertySubMenu;
         private ToolStripMenuItem ExportAnimationSubMenu;
@@ -325,10 +326,15 @@ namespace HaRepacker
                     haRepackerMainPanel.AddWzVectorPropertyToSelectedIndex(nodes[0]);
                 }));
 
-            FixLink = new ToolStripMenuItem("Cleanup For Old Ver.", null, new EventHandler(
+            FixLink = new ToolStripMenuItem("Parse XMLs", null, new EventHandler(
                 delegate (object sender, EventArgs e)
                 {
                     haRepackerMainPanel.FixLinkForOldMS_Click();
+                }));
+            CustomItem = new ToolStripMenuItem("Add a Custom Item", null, new EventHandler(
+                delegate (object sender, EventArgs e)
+                {
+                    haRepackerMainPanel.UploadCustomImages_Click();
                 }));
 
             AddConvexSubMenu = new ToolStripMenuItem("Add", Properties.Resources.add, AddVector);
@@ -394,6 +400,7 @@ namespace HaRepacker
             toolStripmenuItems.Add(ExpandAllChildNode);
             toolStripmenuItems.Add(CollapseAllChildNode);
             toolStripmenuItems.Add(SortAllChildNode);
+            toolStripmenuItems.Add(CustomItem);
 
             // Add
             foreach (ToolStripItem toolStripItem in toolStripmenuItems)
