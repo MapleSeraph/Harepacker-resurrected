@@ -965,8 +965,6 @@ namespace HaRepacker.GUI.Panels
         private void UploadCustomImages(WzCanvasProperty custom, WzNode parent)
         {
             DirectoryInfo di = new DirectoryInfo(@"D:\`repacker input");
-            if (di.Exists)
-            {
                 foreach (string path in Directory.GetFiles(di.Name))
                 {
                     string name = Path.GetFileNameWithoutExtension(path);
@@ -997,7 +995,6 @@ namespace HaRepacker.GUI.Panels
                      }
                 }
             }
-        }
 
         public void CheckCustomImageRecursively(WzNode node)
         {
