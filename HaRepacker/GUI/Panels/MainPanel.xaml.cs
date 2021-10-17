@@ -911,9 +911,6 @@ namespace HaRepacker.GUI.Panels
             }
         }
 
-
-        // private bool threadDone = false;
-
         /// <summary>
         /// Changes the displayed image in 'canvasPropBox' with a user defined input.
         /// </summary>
@@ -980,7 +977,8 @@ namespace HaRepacker.GUI.Panels
                         string imgParentNodeName = custom.Parent.Name.ToString();
                         WzObject bigParent = custom.Parent.Parent;
                         string bigParentsName = bigParent.Name.ToString();
-                        if (name.StartsWith(bigParentsName) && name.Contains("." + imgParentNodeName + ".") && name.EndsWith(imgNodeName) || name.Equals("info." + imgNodeName))
+                        if (name.StartsWith(bigParentsName) && name.Contains("." + imgParentNodeName + ".") && name.EndsWith(imgNodeName) || name.Equals("info." + imgNodeName) || name.Equals("default." + imgNodeName)
+                            || name.Equals("backDefault." + imgNodeName))
                         {
                             custom.PngProperty.SetImage(bmp);
                             custom.ParentImage.Changed = true;
